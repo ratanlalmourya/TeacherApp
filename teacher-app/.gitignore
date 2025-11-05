@@ -1,0 +1,32 @@
+# Mobile (React Native / iOS / Android)
+mobile/node_modules/
+mobile/.expo/
+mobile/dist/
+mobile/npm-debug.*
+mobile/*.jks
+mobile/*.p8
+mobile/*.p12
+mobile/*.key
+mobile/*.mobileprovision
+mobile/*.orig.*
+mobile/web-build/
+mobile/.DS_Store
+mobile/ios/build/
+mobile/ios/Pods/
+mobile/android/app/build/
+mobile/android/.gradle/
+mobile/android/build/
+mobile/android/local.properties
+
+# Server
+server/node_modules/
+server/.env
+server/dist/
+server/build/
+server/coverage/
+server/logs/
+server/*.log
+server/npm-debug.log*
+server/yarn-debug.log*
+server/yarn-error.log*
+server/.DS_Store
