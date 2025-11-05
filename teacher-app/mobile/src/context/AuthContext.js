@@ -1,40 +1,12 @@
 import React, { createContext, useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Constants from 'expo-constants';
 import axios from 'axios';
-import { Platform } from 'react-native';
 
-// Dynamically determine the backend URL so the app works in hosted environments
-// (GitHub Codespaces, tunnels, etc.), emulators, and on-device testing. The order
-// of precedence is:
-//   1. Explicit EXPO_PUBLIC_API_URL environment variable
-//   2. Expo host/manifest information (helpful for Codespaces)
-//   3. Platform-specific localhost fallbacks
-const getBaseUrl = () => {
-  if (process.env.EXPO_PUBLIC_API_URL) {
-    return process.env.EXPO_PUBLIC_API_URL;
-  }
-
-  const hostUri =
-    Constants?.expoConfig?.hostUri ||
-    Constants?.manifest2?.extra?.expoClient?.hostUri ||
-    Constants?.manifest?.debuggerHost;
-
-  if (hostUri) {
-    const hostname = hostUri.split(':')[0];
-    if (hostname) {
-      return `http://${hostname}:5000`;
-    }
-  }
-
-  if (Platform.OS === 'android') {
-    return 'http://10.0.2.2:5000';
-  }
-
-  return 'http://localhost:5000';
-};
-
-const BASE_URL = getBaseUrl();
+// Base URL for the backend API. When running the mobile app on a device or emulator
+// you may need to update this to the appropriate IP address. For example,
+// use "http://10.0.2.2:5000" on Android emulators or the IP of your development
+// machine on a physical device.
+const BASE_URL = 'http://localhost:5000';
 
 export const AuthContext = createContext();
 

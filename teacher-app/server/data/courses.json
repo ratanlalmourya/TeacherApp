@@ -1,0 +1,130 @@
+{
+  "special": [
+    {
+      "id": 1,
+      "title": "Advanced Physics Crash Course",
+      "description": "A comprehensive crash course covering advanced topics in physics for competitive exams.",
+      "price": 1999,
+      "type": "special"
+    },
+    {
+      "id": 2,
+      "title": "Mathematics Olympiad Mastery",
+      "description": "Prepare for mathematics olympiads with detailed problem‑solving strategies and tips.",
+      "price": 1499,
+      "type": "special"
+    }
+  ],
+  "liveRecorded": [
+    {
+      "id": 1,
+      "title": "Live + Recorded Chemistry Batch",
+      "description": "Join live classes and access recorded sessions for organic and inorganic chemistry.",
+      "price": 2499,
+      "type": "live-recorded"
+    },
+    {
+      "id": 2,
+      "title": "Physics Live + Recorded Marathon",
+      "description": "A marathon of live physics lectures with recorded backups for revision.",
+      "price": 2999,
+      "type": "live-recorded"
+    }
+  ],
+  "recorded": [
+    {
+      "id": 1,
+      "title": "Complete Biology Recorded Course",
+      "description": "Pre‑recorded lectures covering the entire biology syllabus with notes and assignments.",
+      "price": 999,
+      "type": "recorded"
+    },
+    {
+      "id": 2,
+      "title": "Mathematics Topic Wise Lectures",
+      "description": "Recorded lectures focusing on each topic in mathematics with solved examples.",
+      "price": 1299,
+      "type": "recorded"
+    }
+  ],
+  "testSeries": [
+    {
+      "id": 1,
+      "title": "All India Test Series",
+      "description": "Full length mock tests with national ranking and detailed solutions.",
+      "price": 499,
+      "type": "test-series"
+    },
+    {
+      "id": 2,
+      "title": "Subject Wise Test Series",
+      "description": "Focused tests for each subject to improve speed and accuracy.",
+      "price": 299,
+      "type": "test-series"
+    }
+  ],
+  "free": [
+    {
+      "id": 1,
+      "title": "Free Sample Physics Lecture",
+      "description": "Access a free sample lecture on kinematics to experience our teaching style.",
+      "price": 0,
+      "type": "free"
+    },
+    {
+      "id": 2,
+      "title": "Free Maths Problem Solving Session",
+      "description": "Join our free session tackling previous years’ mathematics questions.",
+      "price": 0,
+      "type": "free"
+    }
+  ],
+  "demo": [
+    {
+      "id": 1,
+      "title": "Demo Class on Organic Reactions",
+      "description": "Attend a demo class covering the basics of organic reaction mechanisms.",
+      "price": 0,
+      "type": "demo"
+    },
+    {
+      "id": 2,
+      "title": "Demo Class on Calculus Fundamentals",
+      "description": "A beginner friendly class introducing the fundamentals of calculus.",
+      "price": 0,
+      "type": "demo"
+    }
+  ],
+  "pdfNotes": [
+    {
+      "id": 1,
+      "title": "Physics Formula Handbook",
+      "description": "A PDF containing all important physics formulas and key concepts.",
+      "price": 99,
+      "type": "pdf-notes"
+    },
+    {
+      "id": 2,
+      "title": "Chemistry Reaction Notes",
+      "description": "Downloadable notes summarizing essential organic and inorganic reactions.",
+      "price": 89,
+      "type": "pdf-notes"
+    }
+  ],
+  "books": [
+    {
+      "id": 1,
+      "title": "Competitive Physics Book",
+      "description": "A comprehensive book covering physics topics for competitive exams.",
+      "price": 399,
+      "type": "book"
+    },
+    {
+      "id": 2,
+      "title": "Advanced Mathematics Textbook",
+      "description": "An advanced mathematics textbook with practice problems and solutions.",
+      "price": 349,
+      "type": "book"
+    }
+  ]
+}
