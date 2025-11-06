@@ -1,12 +1,38 @@
 import React, { createContext, useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Constants from 'expo-constants';
 import axios from 'axios';
 
-// Base URL for the backend API. When running the mobile app on a device or emulator
-// you may need to update this to the appropriate IP address. For example,
-// use "http://10.0.2.2:5000" on Android emulators or the IP of your development
-// machine on a physical device.
-const BASE_URL = 'http://localhost:5000';
+const resolveBaseUrl = () => {
+  // Highest priority: explicit environment variable set via Expo (EXPO_PUBLIC_API_BASE_URL)
+  const envUrl = process.env.EXPO_PUBLIC_API_BASE_URL;
+  if (envUrl) {
+    return envUrl;
+  }
+
+  // Next priority: value from app config (app.json/app.config.js -> expo.extra.apiBaseUrl)
+  const expoConfig = Constants.expoConfig ?? Constants.manifest;
+  const extraUrl = expoConfig?.extra?.apiBaseUrl;
+  if (extraUrl) {
+    return extraUrl;
+  }
+
+  // During local development with Expo Go we can usually derive the LAN IP from the debugger host
+  if (__DEV__) {
+    const hostUri = Constants.expoConfig?.hostUri ?? Constants.manifest?.debuggerHost;
+    if (hostUri) {
+      const host = hostUri.split(':')[0];
+      if (host && host !== '127.0.0.1' && host !== 'localhost') {
+        return `http://${host}:5000`;
+      }
+    }
+  }
+
+  // Fallback to localhost so automated tests or web previews continue to work
+  return 'http://localhost:5000';
+};
+
+const BASE_URL = resolveBaseUrl();
 
 export const AuthContext = createContext();
 
