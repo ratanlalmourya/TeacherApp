@@ -160,7 +160,7 @@ app.get('/api/downloads', authenticate, (req, res) => {
   return res.json({ items: downloads });
 });
 
-// Start server
-app.listen(PORT, () => {
+// Start server and bind to all interfaces so physical devices on the network can connect
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server listening on port ${PORT}`);
 });
