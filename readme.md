@@ -42,6 +42,14 @@ When you scan the QR code with Expo Go, the mobile client automatically determin
 
 This allows the mobile app to connect to the backend regardless of whether the API is running locally or in a remote cloud workspace.
 
+## Testing authentication
+
+1. **Register a user:** Use the mobile app's sign-up flow (or send a `POST /api/register` request) with a name, email or phone, and a password. This stores the hashed password in `teacher-app/server/data/users.json` for reuse.
+2. **Log in with a password:** Provide the registered email or phone number together with the password. The backend validates the hash and returns a JWT.
+3. **Log in with an OTP:** Supply the registered email or phone number plus the one-time code. For demo purposes the server accepts the static OTP `123456`.
+
+Whenever the backend receives a request it prints a timestamped entry—along with the route and login method for authentication calls—to the terminal running `npm run dev`. This makes it easy to confirm from remote environments (such as GitHub Codespaces) that the mobile client is reaching the server.
+
 ## Folder structure
 
 ```
