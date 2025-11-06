@@ -14,6 +14,15 @@ const SECRET = process.env.JWT_SECRET || 'verysecretkey';
 app.use(cors());
 app.use(express.json());
 
+// Simple request logger so remote consoles (e.g. Codespaces) show incoming traffic
+app.use((req, _res, next) => {
+  const identifier = req.body?.email || req.body?.phone || 'anonymous';
+  console.log(
+    `[${new Date().toISOString()}] ${req.method} ${req.originalUrl} from ${identifier}`
+  );
+  next();
+});
+
 // Paths to data files
 const USERS_PATH = path.join(__dirname, 'data', 'users.json');
 const COURSES_PATH = path.join(__dirname, 'data', 'courses.json');
@@ -73,11 +82,14 @@ function authenticate(req, res, next) {
 // Register endpoint
 app.post('/api/register', (req, res) => {
   const { name, email, phone, password } = req.body;
+  const identifier = email || phone || 'unknown user';
   if (!name || !password || (!email && !phone)) {
+    console.log(`Registration missing data for ${identifier}`);
     return res.status(400).json({ message: 'Name, password and either email or phone are required' });
   }
   const existing = users.find((u) => u.email === email || u.phone === phone);
   if (existing) {
+    console.log(`Registration rejected for existing user ${identifier}`);
     return res.status(409).json({ message: 'User already exists' });
   }
   const hashed = bcrypt.hashSync(password, 8);
@@ -91,12 +103,15 @@ app.post('/api/register', (req, res) => {
   users.push(newUser);
   saveUsers(users);
   const token = generateToken(newUser);
+  console.log(`Registration successful for ${identifier}`);
   return res.json({ token, user: { id: newUser.id, name: newUser.name, email: newUser.email, phone: newUser.phone } });
 });
 
 // Login endpoint supporting password or OTP
 app.post('/api/login', (req, res) => {
   const { email, phone, password, otp } = req.body;
+  const loginIdentifier = email || phone || 'unknown user';
+  console.log(`Login attempt for ${loginIdentifier} using ${otp ? 'OTP' : 'password'}`);
   if ((!email && !phone) || (!password && !otp)) {
     return res.status(400).json({ message: 'Missing credentials' });
   }
@@ -107,16 +122,19 @@ app.post('/api/login', (req, res) => {
   // If OTP is provided, verify it (for demo purposes we use static code)
   if (otp) {
     if (otp !== '123456') {
+      console.log(`Login OTP failed for ${loginIdentifier}`);
       return res.status(401).json({ message: 'Invalid OTP' });
     }
   } else {
     // Verify password
     const valid = bcrypt.compareSync(password, user.password);
     if (!valid) {
+      console.log(`Login password failed for ${loginIdentifier}`);
       return res.status(401).json({ message: 'Invalid password' });
     }
   }
   const token = generateToken(user);
+  console.log(`Login successful for ${loginIdentifier}`);
   return res.json({ token, user: { id: user.id, name: user.name, email: user.email, phone: user.phone } });
 });
 
@@ -160,7 +178,7 @@ app.get('/api/downloads', authenticate, (req, res) => {
   return res.json({ items: downloads });
 });
 
-// Start server
-app.listen(PORT, () => {
+// Start server and bind to all interfaces so physical devices on the network can connect
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server listening on port ${PORT}`);
 });

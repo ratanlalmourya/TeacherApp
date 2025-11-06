@@ -1,12 +1,54 @@
 import React, { createContext, useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Constants from 'expo-constants';
 import axios from 'axios';
 
-// Base URL for the backend API. When running the mobile app on a device or emulator
-// you may need to update this to the appropriate IP address. For example,
-// use "http://10.0.2.2:5000" on Android emulators or the IP of your development
-// machine on a physical device.
-const BASE_URL = 'http://localhost:5000';
+const sanitiseHost = (hostUri) => {
+  if (typeof URL === 'undefined') {
+    return null;
+  }
+  try {
+    const normalised = hostUri.includes('://') ? hostUri : `http://${hostUri}`;
+    const { hostname } = new URL(normalised);
+    return hostname;
+  } catch (error) {
+    if (__DEV__) {
+      console.warn('Failed to parse Expo host URI for API base URL:', hostUri, error);
+    }
+    return null;
+  }
+};
+
+const resolveBaseUrl = () => {
+  // Highest priority: explicit environment variable set via Expo (EXPO_PUBLIC_API_BASE_URL)
+  const envUrl = process.env.EXPO_PUBLIC_API_BASE_URL;
+  if (envUrl) {
+    return envUrl;
+  }
+
+  // Next priority: value from app config (app.json/app.config.js -> expo.extra.apiBaseUrl)
+  const expoConfig = Constants.expoConfig ?? Constants.manifest;
+  const extraUrl = expoConfig?.extra?.apiBaseUrl;
+  if (extraUrl) {
+    return extraUrl;
+  }
+
+  // During local development with Expo Go we can usually derive the LAN IP from the debugger host
+  if (__DEV__) {
+    const hostUri = Constants.expoConfig?.hostUri ?? Constants.manifest?.debuggerHost;
+    if (hostUri) {
+      const host = sanitiseHost(hostUri);
+      if (host && host !== '127.0.0.1' && host !== 'localhost') {
+        return `http://${host}:5000`;
+      }
+    }
+  }
+
+  // Fallback to localhost so automated tests or web previews continue to work
+  return 'http://localhost:5000';
+};
+
+const BASE_URL = resolveBaseUrl();
 
 export const AuthContext = createContext();
 
@@ -50,8 +92,12 @@ export const AuthProvider = ({ children }) => {
       await AsyncStorage.setItem('user', JSON.stringify(userData));
       return { success: true };
     } catch (error) {
+      if (__DEV__) {
+        console.warn('Login request failed:', error?.message, error?.response?.data);
+      }
       const message =
-        error?.response?.data?.message || 'An error occurred while logging in.';
+        error?.response?.data?.message ||
+        `Unable to reach the server at ${BASE_URL}. Please confirm it is running and accessible.`;
       return { success: false, message };
     }
   };
@@ -72,8 +118,12 @@ export const AuthProvider = ({ children }) => {
       await AsyncStorage.setItem('user', JSON.stringify(userData));
       return { success: true };
     } catch (error) {
+      if (__DEV__) {
+        console.warn('Registration request failed:', error?.message, error?.response?.data);
+      }
       const message =
-        error?.response?.data?.message || 'An error occurred while registering.';
+        error?.response?.data?.message ||
+        `Unable to reach the server at ${BASE_URL}. Please confirm it is running and accessible.`;
       return { success: false, message };
     }
   };
