@@ -82,11 +82,14 @@ function authenticate(req, res, next) {
 // Register endpoint
 app.post('/api/register', (req, res) => {
   const { name, email, phone, password } = req.body;
+  const identifier = email || phone || 'unknown user';
   if (!name || !password || (!email && !phone)) {
+    console.log(`Registration missing data for ${identifier}`);
     return res.status(400).json({ message: 'Name, password and either email or phone are required' });
   }
   const existing = users.find((u) => u.email === email || u.phone === phone);
   if (existing) {
+    console.log(`Registration rejected for existing user ${identifier}`);
     return res.status(409).json({ message: 'User already exists' });
   }
   const hashed = bcrypt.hashSync(password, 8);
@@ -100,6 +103,7 @@ app.post('/api/register', (req, res) => {
   users.push(newUser);
   saveUsers(users);
   const token = generateToken(newUser);
+  console.log(`Registration successful for ${identifier}`);
   return res.json({ token, user: { id: newUser.id, name: newUser.name, email: newUser.email, phone: newUser.phone } });
 });
 

@@ -3,6 +3,22 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
 import axios from 'axios';
 
+const sanitiseHost = (hostUri) => {
+  if (typeof URL === 'undefined') {
+    return null;
+  }
+  try {
+    const normalised = hostUri.includes('://') ? hostUri : `http://${hostUri}`;
+    const { hostname } = new URL(normalised);
+    return hostname;
+  } catch (error) {
+    if (__DEV__) {
+      console.warn('Failed to parse Expo host URI for API base URL:', hostUri, error);
+    }
+    return null;
+  }
+};
+
 const resolveBaseUrl = () => {
   // Highest priority: explicit environment variable set via Expo (EXPO_PUBLIC_API_BASE_URL)
   const envUrl = process.env.EXPO_PUBLIC_API_BASE_URL;
@@ -21,7 +37,7 @@ const resolveBaseUrl = () => {
   if (__DEV__) {
     const hostUri = Constants.expoConfig?.hostUri ?? Constants.manifest?.debuggerHost;
     if (hostUri) {
-      const host = hostUri.split(':')[0];
+      const host = sanitiseHost(hostUri);
       if (host && host !== '127.0.0.1' && host !== 'localhost') {
         return `http://${host}:5000`;
       }
@@ -76,8 +92,12 @@ export const AuthProvider = ({ children }) => {
       await AsyncStorage.setItem('user', JSON.stringify(userData));
       return { success: true };
     } catch (error) {
+      if (__DEV__) {
+        console.warn('Login request failed:', error?.message, error?.response?.data);
+      }
       const message =
-        error?.response?.data?.message || 'An error occurred while logging in.';
+        error?.response?.data?.message ||
+        `Unable to reach the server at ${BASE_URL}. Please confirm it is running and accessible.`;
       return { success: false, message };
     }
   };
@@ -98,8 +118,12 @@ export const AuthProvider = ({ children }) => {
       await AsyncStorage.setItem('user', JSON.stringify(userData));
       return { success: true };
     } catch (error) {
+      if (__DEV__) {
+        console.warn('Registration request failed:', error?.message, error?.response?.data);
+      }
       const message =
-        error?.response?.data?.message || 'An error occurred while registering.';
+        error?.response?.data?.message ||
+        `Unable to reach the server at ${BASE_URL}. Please confirm it is running and accessible.`;
       return { success: false, message };
     }
   };
