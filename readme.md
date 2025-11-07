@@ -20,6 +20,27 @@ The server listens on port `5000` by default and now binds to `0.0.0.0`, making 
 
 > **Tip:** If you need to run the API on a different port, set the `PORT` environment variable before starting the server.
 
+### Need a public tunnel?
+
+If you are working from GitHub Codespaces (or any environment where your phone cannot reach the machine directly), start the API with the tunnel helper. It keeps the Express server running and publishes it through [localtunnel](https://github.com/localtunnel/localtunnel):
+
+```bash
+cd teacher-app/server
+npm install
+npm run dev:tunnel
+```
+
+Once the tunnel is ready you will see output similar to:
+
+```
+🔓  Tunnel established at: https://lively-frog-12345.loca.lt
+📱  Use this in Expo:
+    export EXPO_PUBLIC_API_BASE_URL="https://lively-frog-12345.loca.lt"
+    # or set expo.extra.apiBaseUrl in teacher-app/mobile/app.json
+```
+
+Copy the printed URL into `EXPO_PUBLIC_API_BASE_URL` (or `app.json`) before launching Expo Go so the mobile app calls the tunneled address.
+
 ## Running the mobile app
 
 ```bash
@@ -32,8 +53,9 @@ When you scan the QR code with Expo Go, the mobile client automatically determin
 
 1. `EXPO_PUBLIC_API_BASE_URL` environment variable (set in your shell or `.env` when using Expo).
 2. `expo.extra.apiBaseUrl` configured in `teacher-app/mobile/app.json`.
-3. The LAN IP address detected from Expo when running in development mode (useful for physical devices on the same network).
-4. Falls back to `http://localhost:5000` for simulators or automated tests.
+3. The Metro bundler host detected from React Native (works for LAN, tunnel, and USB debug scenarios).
+4. Expo host metadata when available.
+5. Falls back to `http://10.0.2.2:5000` on Android emulators and `http://localhost:5000` otherwise.
 
 ### Customising the API base URL
 
@@ -62,4 +84,16 @@ teacher-app/
 
 - Ensure the machine running the backend exposes port `5000` to your device. When using GitHub Codespaces or other cloud IDEs, use the forwarded URL in `EXPO_PUBLIC_API_BASE_URL`.
 - If authentication requests fail, confirm that the Expo client resolved the correct base URL by checking the `BASE_URL` value in the app logs.
+- For GitHub Codespaces specifically:
+  1. Set the port `5000` visibility to **Public** from the Ports panel (or run `gh codespace ports visibility 5000:public -c $CODESPACE_NAME`).
+  2. Use the `https://<codespace>-5000.app.github.dev` URL that appears in the Ports panel (the `.app.github.dev` host works without GitHub authentication).
+  3. Export that URL before starting Expo or place it in `app.json`:
+
+     ```bash
+     export EXPO_PUBLIC_API_BASE_URL="https://<codespace>-5000.app.github.dev"
+     npx expo start --tunnel
+     ```
+
+  4. Alternatively run `npm run dev:tunnel` inside `teacher-app/server` to receive a `https://*.loca.lt` address that works from any device without exposing the Codespace port publicly.
+  5. If you already launched Expo, reload the app after setting the variable so the new API base URL is used.
 
