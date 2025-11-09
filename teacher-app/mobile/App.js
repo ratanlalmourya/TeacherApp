@@ -1,9 +1,11 @@
+import 'react-native-gesture-handler';
 import React, { useContext } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { AuthProvider, AuthContext } from './src/context/AuthContext';
 
 // Screens
@@ -83,7 +85,8 @@ const HomeTabs = () => {
 const DrawerNavigator = () => {
   return (
     <Drawer.Navigator
-      useLegacyImplementation={false}
+      // `useLegacyImplementation` was removed to keep compatibility with
+      // Reanimated 3+, which raised a runtime error when the drawer mounted.
       drawerContent={(props) => <CustomDrawerContent {...props} />}
       screenOptions={{ headerShown: false }}
     >
@@ -127,10 +130,12 @@ const RootNavigator = () => {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <NavigationContainer>
-        <RootNavigator />
-      </NavigationContainer>
-    </AuthProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <AuthProvider>
+        <NavigationContainer>
+          <RootNavigator />
+        </NavigationContainer>
+      </AuthProvider>
+    </GestureHandlerRootView>
   );
 }
