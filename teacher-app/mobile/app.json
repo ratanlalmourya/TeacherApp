@@ -29,7 +29,7 @@
       "favicon": "./assets/icon.png"
     },
     "extra": {
-      "apiBaseUrl": ""
+      "apiBaseUrl": "https://teacher-app-backend.vercel.app/"
     }
   }
 }
