@@ -83,7 +83,6 @@ const HomeTabs = () => {
 const DrawerNavigator = () => {
   return (
     <Drawer.Navigator
-      useLegacyImplementation={false}
       drawerContent={(props) => <CustomDrawerContent {...props} />}
       screenOptions={{ headerShown: false }}
     >
